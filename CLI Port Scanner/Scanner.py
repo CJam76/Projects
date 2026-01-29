@@ -2,38 +2,38 @@ import socket
 
 target = input("Enter the host to scan: ")
 
-# Return IP if valid host, otherwise return error message.
-
 try:
     ip = socket.gethostbyname(target)
 
-    port_number = int(input("Enter port number: "))
+    min_port = int(input("Enter the first port to scan: "))
+    max_port = int(input("Enter the last port to scan: "))
 
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    for i in range(min_port,max_port + 1):
 
-    s.settimeout(1)
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-    result = s.connect_ex((ip, port_number))
-    # for port in range(start, end + 1):
-    #     check
-    #     port
-    #     using
-    #     your
-    #     existing
-    #     logic
-    #     print
-    #     result if open
-    if result == 0:
-        print("Port is open")
-    else:
-        print("Port is closed")
+        s.settimeout(1)
 
-    try:
-        s.shutdown(socket.SHUT_WR)
-    except OSError as e:
-        print(f"Error during shutdown: {e}")
-    finally:
-        s.close()
+        result = s.connect_ex((ip,i))
+
+        open_ports = []
+        closed_ports = []
+
+        if result == 0:
+            open_ports.append(i)
+        else:
+            closed_ports.append(i)
+
+        for port in open_ports:
+            print(str(port) + " is open")
+
+        try:
+         s.shutdown(socket.SHUT_WR)
+        except OSError as e:
+         print(f"Error during shutdown: {e}")
+        finally:
+            s.close()
+
 
 except socket.gaierror:
     print("Could not resolve hostname.")
